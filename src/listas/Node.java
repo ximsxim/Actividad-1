@@ -1,11 +1,11 @@
 package listas;
 
 /**
- * Autor: Ximena Salazar
- * Fecha: 16/08/2025
- * Descripción: Clase que representa un nodo de la lista.
- * Aquí se guarda el dato y también la referencia para
- * poder enlazarse con otros nodos.
+ * Autor: Fernanda Ximena Garcia Salazar
+ * Fecha: 21/08/2025
+ * Descripción: Esta clase tiene la función de representar un nodo, 
+ * guarda un valor y permite enlazarse con otros, de manera que juntos 
+ * puedan formar listas, pilas o colas.
  */
 public class Node<T> {
     private T data;

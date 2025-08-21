@@ -1,149 +1,166 @@
 package listas;
 
+import java.util.Locale;
 import java.util.Scanner;
-import listas.LinkedList.ListKind;
 
 /**
- * Autor: Ximena Salazar
- * Fecha: 16/08/2025
- * Descripción: Clase principal del programa. Aquí aparece el menú
- * donde el usuario puede elegir el tipo de lista, hacer operaciones
- * con contactos o revisar los ejemplos de listas.
+ * Autor: Fernanda Ximena Garcia Salazar
+ * Fecha: 21/08/2025
+ * Descripción: La función de esta clase es servir como punto de inicio del programa. 
+ * Desde aquí se muestra el menú principal y se permite al usuario elegir entre 
+ * las opciones para probar la lista, la pila y la cola.
  */
 public class Main {
-
     private static final Scanner sc = new Scanner(System.in);
+    private static final Stack<String> pilaComandos = new Stack<>();
+    private static final Queue<String> colaProcesos = new Queue<>();
 
     public static void main(String[] args) {
-        while (true) {
-            System.out.println("\n~~ MENÚ PRINCIPAL ~~");
-            System.out.println("1) Lista simple");
-            System.out.println("2) Lista doble");
-            System.out.println("3) Lista circular");
-            System.out.println("4) Ejemplos de lista simple");
-            System.out.println("5) Ejemplos de lista doble");
-            System.out.println("6) Ejemplos de lista circular");
-            System.out.println("7) Salir");
-            System.out.print("Elige una opción: ");
-
-            String op = sc.nextLine().trim();
-            switch (op) {
-                case "1" -> submenu(ListKind.SIMPLE);
-                case "2" -> submenu(ListKind.DOBLE);
-                case "3" -> submenu(ListKind.CIRCULAR);
-                case "4" -> DataTypeExamples.ejemplosListaSimple();
-                case "5" -> DataTypeExamples.ejemplosListaDoble();
-                case "6" -> DataTypeExamples.ejemplosListaCircular();
-                case "7" -> { System.out.println("Saliendo..."); return; }
-                default -> System.out.println("Opción inválida.");
+        Locale.setDefault(new Locale("es", "MX"));
+        boolean seguir = true;
+        while (seguir) {
+            System.out.println("\n~ SIMULADOR DE SISTEMA OPERATIVO ~");
+            System.out.println("1) Agregar comandos a la pila");
+            System.out.println("2) Agregar procesos a la cola");
+            System.out.println("3) Ver estado actual");
+            System.out.println("4) Ejecutar comandos ");
+            System.out.println("5) Realizar procesos ");
+            System.out.println("6) Salir");
+            int opcion = pedirOpcion(1, 6);
+            switch (opcion) {
+                case 1 -> agregarComandos();
+                case 2 -> agregarProcesos();
+                case 3 -> mostrarEstado();
+                case 4 -> ejecutarComandos();
+                case 5 -> realizarProcesos();
+                case 6 -> { System.out.println("Saliendo..."); seguir = false; }
             }
         }
     }
-    private static void submenu(ListKind tipo) {
-        LinkedList<Contactos> lista = new LinkedList<>(tipo);
-        while (true) {
-            System.out.println("\n~~ LISTA " + tipo + " ~~");
-            System.out.println("1) Regresar al menú principal");
-            System.out.println("2) Ingresar datos (nombre, dirección, teléfono)");
-            System.out.println("3) Insertar al inicio");
-            System.out.println("4) Insertar al final");
-            System.out.println("5) Buscar (por nombre)");
-            System.out.println("6) Borrar (por nombre)");
-            System.out.println("7) Actualizar (por nombre)");
-            if (tipo == ListKind.DOBLE) {
-                System.out.println("8) Imprimir lista (Izq a Der)");
-                System.out.println("9) Imprimir lista (Der a Izq)");
-            } else if (tipo == ListKind.CIRCULAR) {
-                System.out.println("8) Imprimir lista (1 vuelta, diagrama)");
-            } else {
-                System.out.println("8) Imprimir lista");
-            }
-            System.out.print("Elige una opción: ");
 
-            String op = sc.nextLine().trim();
-            switch (op) {
-                case "1" -> { return; }
+    private static void agregarComandos() {
+        System.out.println("\n** Agregando comandos **");
+        boolean agregarMas;
+        do {
+            String cmd = pedirNoVacio("Escribe un comando y presiona ENTER: ");
+            pilaComandos.push(cmd);
+            agregarMas = pedirSiNo("¿Deseas agregar otro comando? (si/no): ");
+        } while (agregarMas);
+    }
 
-                case "2" -> {
-                    lista.insertLast(capturarContactoSeguro());
-                    System.out.println("Contacto agregado al final.");
-                }
+    private static void agregarProcesos() {
+        System.out.println("\n** Agregando procesos **");
+        boolean agregarMas;
+        do {
+            String proc = pedirNoVacio("Escribe un proceso y presiona ENTER: ");
+            colaProcesos.push(proc);
+            agregarMas = pedirSiNo("¿Deseas agregar otro proceso? (si/no): ");
+        } while (agregarMas);
+    }
 
-                case "3" -> {
-                    lista.insertFirst(capturarContactoSeguro());
-                    System.out.println("Contacto agregado al inicio.");
-                }
+    private static void mostrarEstado() {
+        System.out.println("\n** ESTADO DEL SISTEMA **");
+        System.out.println("Los comandos se están manejando en una pila (Stack):");
+        System.out.println("Pila: " + pilaComandos.toArrowString());
 
-                case "4" -> {
-                    lista.insertLast(capturarContactoSeguro());
-                    System.out.println("Contacto agregado al final.");
-                }
+        System.out.println("");
 
-                case "5" -> {
-                    String nombre = pedir("Nombre a buscar: ");
-                    Contactos encontrado = lista.find(ct -> ct.getNombre().equalsIgnoreCase(nombre));
-                    System.out.println(encontrado != null ? encontrado : "No encontrado.");
-                }
+        System.out.println("Los procesos se están manejando en una fila (Queue):");
+        System.out.println("Fila: " + colaProcesos.toArrowString());
+    }
 
-                case "6" -> {
-                    String nombre = pedir("Nombre a borrar: ");
-                    boolean elim = lista.remove(ct -> ct.getNombre().equalsIgnoreCase(nombre));
-                    System.out.println(elim ? "Eliminado." : "No encontrado.");
-                }
-
-                case "7" -> {
-                    String objetivo = pedir("Nombre a actualizar: ");
-                    boolean ok = lista.update(
-                        ct -> ct.getNombre().equalsIgnoreCase(objetivo),
-                        ct -> new Contactos(
-                                pedir("Nuevo nombre: "),
-                                pedir("Nueva dirección: "),
-                                leerEnteroSeguro("Nuevo teléfono: ")
-                        )
-                    );
-                    System.out.println(ok ? "Actualizado." : "No encontrado.");
-                }
-
-                case "8" -> {
-                    if (tipo == ListKind.CIRCULAR) {
-                        lista.printCircularDiagram(); 
-                    } else {
-                        lista.print();                
-                    }
-                }
-
-                case "9" -> {
-                    if (tipo == ListKind.DOBLE) {
-                        lista.printReverse();         
-                    } else {
-                        System.out.println("Opción inválida.");
-                    }
-                }
-
-                default -> System.out.println("Opción inválida.");
-            }
+    private static void ejecutarComandos() {
+        System.out.println("\n** EJECUTAR COMANDOS **");
+        if (pilaComandos.isEmpty()) {
+            System.out.println("No hay comandos en la pila.");
+            return;
         }
-    }
-    private static Contactos capturarContactoSeguro() {
-        String nombre = pedir("Nombre: ").trim();
-        String direccion = pedir("Dirección: ").trim();
-        int telefono = leerEnteroSeguro("Teléfono: ");
-        return new Contactos(nombre, direccion, telefono);
-    }
-
-    private static int leerEnteroSeguro(String msg) {
-        while (true) {
+        boolean continuar = true;
+        while (continuar && !pilaComandos.isEmpty()) {
             try {
-                System.out.print(msg);
-                return Integer.parseInt(sc.nextLine().trim());
-            } catch (NumberFormatException e) {
-                System.out.println("Número inválido. Intenta de nuevo.");
+                String siguiente = pilaComandos.peek();
+                System.out.println("Último comando: " + siguiente);
+                String ejecutado = pilaComandos.pop();
+                System.out.println("Ejecutando: " + ejecutado);
+                System.out.println("");
+                System.out.println("Pila ahora: " + pilaComandos.toArrowString());
+                if (!pilaComandos.isEmpty()) {
+                    continuar = pedirSiNo("¿Ejecutar el siguiente? (si/no): ");
+                    System.out.println("");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                break;
             }
         }
     }
 
-    private static String pedir(String msg) {
-        System.out.print(msg);
-        return sc.nextLine();
+    private static void realizarProcesos() {
+        System.out.println("\n** REALIZAR PROCESOS **");
+        if (colaProcesos.isEmpty()) {
+            System.out.println("No hay procesos en la fila.");
+            return;
+        }
+        boolean continuar = true;
+        while (continuar && !colaProcesos.isEmpty()) {
+            try {
+                String siguiente = colaProcesos.peek();
+                System.out.println("Siguiente proceso: " + siguiente);
+                String ejecutado = colaProcesos.pop();
+                System.out.println("Realizando: " + ejecutado);
+                System.out.println("");
+                System.out.println("Fila ahora: " + colaProcesos.toArrowString());
+                if (!colaProcesos.isEmpty()) {
+                    continuar = pedirSiNo("¿Realizar el siguiente? (si/no): ");
+                    System.out.println("");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                break;
+            }
+        }
+    }
+
+    // Utilidades de validación 
+
+    private static int pedirOpcion(int min, int max) {
+        while (true) {
+            System.out.print("Elige una opción: ");
+            String s = sc.nextLine();
+            try {
+                int val = Integer.parseInt(s.trim());
+                if (val >= min && val <= max) return val;
+                System.out.println("Valor fuera de rango.");
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Debe ser un número.");
+            }
+        }
+    }
+
+    private static boolean pedirSiNo(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String s = sc.nextLine();
+            if (s == null) continue;
+            s = s.trim().toLowerCase();
+            if (s.isEmpty()) {
+                System.out.println("No dejes la respuesta vacía.");
+                continue;
+            }
+            if (s.equals("si") || s.equals("s")) return true;
+            if (s.equals("no") || s.equals("n")) return false;
+            System.out.println("Responde 'si' o 'no' por favor.");
+        }
+    }
+
+    private static String pedirNoVacio(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String s = sc.nextLine();
+            if (s == null) continue;
+            s = s.trim();
+            if (!s.isEmpty()) return s;
+            System.out.println("El texto no puede estar vacío.");
+        }
     }
 }
